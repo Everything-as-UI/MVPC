@@ -2,19 +2,22 @@
 
 import PackageDescription
 
+let dependencies: [Package.Dependency]
+if Context.environment["ALLUI_ENV"] == "LOCAL" {
+    dependencies = [.package(name: "SwiftLangUI", path: "../SwiftLangUI")]
+} else {
+    dependencies = [.package(url: "https://github.com/Everything-as-UI/SwiftLangUI.git", branch: "main")]
+}
+
 let package = Package(
     name: "MVPC",
-    platforms: [.macOS(.v12), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
+    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
     products: [
-        .library(name: "MVPC", targets: ["MVPC"]),
-        .library(name: "SwiftLangUI", targets: ["SwiftLangUI"])
+        .library(name: "MVPC", targets: ["MVPC"])
     ],
-    dependencies: [
-        .package(path: "../DocumentUI")
-    ],
+    dependencies: dependencies,
     targets: [
         .target(name: "MVPC", dependencies: ["SwiftLangUI"]),
-        .target(name: "SwiftLangUI", dependencies: ["DocumentUI"]),
         .testTarget(name: "MVPCTests", dependencies: ["MVPC"])
     ]
 )
