@@ -14,11 +14,11 @@ extension MVPCTests {
     func testScreenFlow() {
         let didTapFunc = Function(name: "didTapActionButton")
         let transitionHandlerType = "UINavigationController"
-        let transitionHandlerArg = ClosureDecl.Arg(name: "transitionHandler", type: transitionHandlerType)
+        let transitionHandlerArg = ClosureDecl.Arg(label: "transitionHandler", type: transitionHandlerType)
         let flow = [
             ScreenModule(name: "FirstScreen", args: [], presenterInterface: .presenter(name: "IFirstScreenPresenter", funcs: [didTapFunc])),
-            ScreenModule(name: "SecondScreen", args: [ClosureDecl.Arg(name: "title", type: "String")], presenterInterface: .presenter(name: "ISecondScreenPresenter", funcs: [didTapFunc])),
-            ScreenModule(name: "ThirdScreen", args: [ClosureDecl.Arg(name: "image", type: "UIImage")], presenterInterface: .presenter(name: "IThirdScreenPresenter", funcs: [didTapFunc]))
+            ScreenModule(name: "SecondScreen", args: [ClosureDecl.Arg(label: "title", type: "String")], presenterInterface: .presenter(name: "ISecondScreenPresenter", funcs: [didTapFunc])),
+            ScreenModule(name: "ThirdScreen", args: [ClosureDecl.Arg(label: "image", type: "UIImage")], presenterInterface: .presenter(name: "IThirdScreenPresenter", funcs: [didTapFunc]))
         ]
 
         let screens = flow.enumerated().map { (i, module) in
@@ -99,7 +99,7 @@ struct CoordinatorImplResolver: CoordinatorImplementationResolver {
 
 struct ArgsResolver: ImplementationResolver {
     func resolve(for arg: ClosureDecl.Arg, with context: ImplementationResolverContext) -> AnyTextDocument {
-        arg.name.erased
+        arg.label.erased
     }
 }
 
@@ -176,7 +176,7 @@ struct MainCoordinatorExtensionImplementationResolver: ImplementationResolver {
             return function.withName("show\(module.name)").call(in: nil).erased
         case "show\(module.name)":
             return Group {
-                "let viewController = \(module.assembly().interface.funcs[0].call(in: module.assemblyDependency.name))".endingWithNewline()
+                "let viewController = \(module.assembly().interface.funcs[0].call(in: module.assemblyDependency.label))".endingWithNewline()
                 "transitionHandler?.pushViewController(viewController, animated: true)"
             }.erased
         default: return inheritedResolver.resolve(for: function, with: context)
@@ -184,7 +184,7 @@ struct MainCoordinatorExtensionImplementationResolver: ImplementationResolver {
     }
 
     func resolve(for arg: ClosureDecl.Arg, with context: ImplementationResolverContext) -> AnyTextDocument {
-        guard arg.name != "output" else { return "self" }
-        return arg.name.erased
+        guard arg.label != "output" else { return "self" }
+        return arg.label.erased
     }
 }

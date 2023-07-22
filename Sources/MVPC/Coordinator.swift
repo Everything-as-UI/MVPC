@@ -54,7 +54,7 @@ public struct Coordinator: TextDocument {
                 ClosureDecl(name: "init", args: dependencies + args, modifiers: modifiers)
                 Brackets(parenthesis: .curve.prefixed(.space), indentation: indentation) {
                     ForEach(dependencies + args, separator: .newline) { arg in
-                        "self.\(arg.name) = \(arg.argName ?? arg.name)"
+                        "self.\(arg.label) = \(arg.argName ?? arg.label)"
                     }
                 }
             }.endingWithNewline(2)
@@ -71,21 +71,21 @@ public struct Coordinator: TextDocument {
 
     private var moduleInputs: [VarDecl] {
         inputs.map {
-            VarDecl(name: $0.name, type: "\($0.type)?", modifiers: [.weak, .var])
+            VarDecl(name: $0.label, type: "\($0.type)?", modifiers: [.weak, .var])
         }
     }
 
     @TextDocumentBuilder
     private var dependencyProperties: some TextDocument {
         Joined(separator: String.newline, elements: moduleInputs + dependencies.map {
-            VarDecl(name: $0.name, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
         })
     }
 
     @TextDocumentBuilder
     private var argsProperties: some TextDocument {
         Joined(separator: String.newline, elements: args.map {
-            VarDecl(name: $0.name, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
         })
     }
 }

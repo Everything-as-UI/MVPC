@@ -49,7 +49,7 @@ public struct View: TextDocument {
             ClosureDecl(name: "init", args: dependencies, modifiers: modifiers)
             Brackets(parenthesis: .curve.prefixed(.space), indentation: indentation) {
                 ForEach(dependencies, separator: .newline) { arg in
-                    "self.\(arg.name) = \(arg.argName ?? arg.name)"
+                    "self.\(arg.label) = \(arg.argName ?? arg.label)"
                 }.endingWithNewline()
                 "super.init(nibName: nil, bundle: nil)"
             }.endingWithNewline(2)
@@ -81,7 +81,7 @@ public struct View: TextDocument {
     @TextDocumentBuilder
     private var dependencyProperties: some TextDocument {
         ForEach(dependencies, separator: "\n") {
-            VarDecl(name: $0.name, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
         }
     }
 }

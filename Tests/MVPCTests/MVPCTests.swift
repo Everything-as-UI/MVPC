@@ -33,8 +33,8 @@ final class MVPCTests: XCTestCase {
         let module = ScreenModule(name: name,
                                   input: ProtocolDecl(name: "\(name)Input", funcs: [Function(name: "update")]),
                                   output: ProtocolDecl(name: "\(name)Output", funcs: [Function(name: "showNextScreen")]),
-                                  args: [ClosureDecl.Arg(name: "title", type: "String")],
-                                  dependencies: [ClosureDecl.Arg(name: "imageResolver", type: "UIImageAsset")],
+                                  args: [ClosureDecl.Arg(label: "title", type: "String")],
+                                  dependencies: [ClosureDecl.Arg(label: "imageResolver", type: "UIImageAsset")],
                                   presenterInterface: .presenter(name: "I\(name)Presenter", vars: [
                                     ProtocolDecl.Var(name: "dataSource", type: "[Int]"),
                                     ProtocolDecl.Var(name: "title", type: "String")
@@ -51,5 +51,49 @@ final class MVPCTests: XCTestCase {
             .implementationResolver(coordinatorImplResolver)
         let coordinatorWithImpl = coordinator.implementationResolver(coordinatorImplResolver)
         print("\(moduleImpl)", "\(coordinatorWithImpl)", "\(coordinatorAssembly)", separator: "\n\n/// -------------------------\n\n")
+    }
+
+    func testService() {
+        let service = Service(
+            typeName: "SomeModelLoadingService",
+            interface: ProtocolDecl(
+                name: "ISomeModelLoadingService",
+                funcs: [
+                    Function(
+                        name: "loadModel",
+                        args: [
+                            ClosureDecl.Arg(label: "for", type: "String", argName: "modelID")
+                        ],
+                        result: "Model",
+                        traits: [.async, .throws]
+                    )
+                ]
+            ),
+            dependencies: [ClosureDecl.Arg(label: "requestProcessor", type: "IRequestProcessor")],
+            modifiers: []
+        )
+
+        print("\(service)")
+    }
+
+    func testRouter() {
+        let router = Router(
+            typeName: "SomeScreenRouter",
+            interface: ProtocolDecl(
+                name: "ISomeScreenRouter",
+                funcs: [
+                    Function(
+                        name: "showSheet",
+                        args: [
+                            ClosureDecl.Arg(label: "for", type: "String", argName: "text")
+                        ]
+                    )
+                ]
+            ),
+            dependencies: [ClosureDecl.Arg(label: "transitionHandler", type: "UIViewController")],
+            modifiers: []
+        )
+
+        print("\(router)")
     }
 }

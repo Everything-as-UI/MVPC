@@ -44,12 +44,12 @@ public struct ScreenModule {
         "I\(name)Assembly"
     }
     public var assemblyDependency: ClosureDecl.Arg {
-        ClosureDecl.Arg(name: assemblyTypeName.startsLowercased(), type: assemblyInterfaceName)
+        ClosureDecl.Arg(label: assemblyTypeName.startsLowercased(), type: assemblyInterfaceName)
     }
     public func assembly(accessLevel: Keyword? = nil) -> Assembly {
         Assembly(typeName: assemblyTypeName,
                          interface: .assembly(name: assemblyInterfaceName,
-                                              args: args + (output.map { [ClosureDecl.Arg(name: "output", type: $0.decl.name)] } ?? []),
+                                              args: args + (output.map { [ClosureDecl.Arg(label: "output", type: $0.decl.name)] } ?? []),
                                               result: input.map { "Module<\($0.decl.name)>" } ?? "UIViewController",
                                               modifiers: accessLevel.map({ [$0] }) ?? []),
                          dependencies: dependencies, // TODO: assembly can itself dependencies
@@ -61,7 +61,7 @@ public struct ScreenModule {
         "\(name)Presenter"
     }
     public var presenterDependency: ClosureDecl.Arg {
-        ClosureDecl.Arg(name: "presenter", type: presenterInterface.decl.name)
+        ClosureDecl.Arg(label: "presenter", type: presenterInterface.decl.name)
     }
     public func presenter(accessLevel: Keyword? = nil) -> Presenter {
         Presenter(typeName: presenterTypeName,
@@ -78,7 +78,7 @@ public struct ScreenModule {
         "\(name)ViewController"
     }
     public var viewDependency: ClosureDecl.Arg {
-        ClosureDecl.Arg(name: "view", type: viewInterface.decl.name)
+        ClosureDecl.Arg(label: "view", type: viewInterface.decl.name)
     }
     public var allViewDependencies: [ClosureDecl.Arg] {
         [presenterDependency] + viewDependencies
@@ -106,13 +106,13 @@ public extension ScreenModule {
         Self(name: name, input: input, output: output, args: args, dependencies: dependencies, presenterInterface: presenterInterface, viewInterface: viewInterface, viewDependencies: viewDependencies)
     }
 }
-extension ScreenModule {
+public extension ScreenModule {
     var defaultCoordinatorTypeName: String { "\(name)Coordinator" }
     var defaultCoordinatorInterfaceName: String { "I\(name)Coordinator" }
     var defaultCoordinatorAssemblyTypeName: String { "\(name)CoordinatorAssembly" }
     var defaultCoordinatorAssemblyInterfaceName: String { "I\(name)CoordinatorAssembly" }
     var defaultCoordinatorAssemblyDependency: ClosureDecl.Arg {
-        ClosureDecl.Arg(name: defaultCoordinatorAssemblyTypeName.startsLowercased(),
+        ClosureDecl.Arg(label: defaultCoordinatorAssemblyTypeName.startsLowercased(),
                         type: defaultCoordinatorAssemblyInterfaceName)
     }
     func coordinator(dependencies: [ClosureDecl.Arg] = [],
@@ -122,7 +122,7 @@ extension ScreenModule {
     }
 }
 
-extension Coordinator {
+public extension Coordinator {
     init(startsWith module: ScreenModule,
          dependencies: [ClosureDecl.Arg] = [],
          transitionHandlerType: String = "UIViewController",
@@ -131,7 +131,7 @@ extension Coordinator {
                   interface: .coordinator(name: module.defaultCoordinatorInterfaceName,
                                           transitionHandlerType: transitionHandlerType,
                                           modifiers: modifiers),
-                  inputs: module.input.map({ [ClosureDecl.Arg(name: $0.decl.name.startsLowercased(), type: $0.decl.name)] }) ?? [],
+                  inputs: module.input.map({ [ClosureDecl.Arg(label: $0.decl.name.startsLowercased(), type: $0.decl.name)] }) ?? [],
                   outputs: module.output.map({ [$0] }) ?? [],
                   dependencies: [module.assemblyDependency] + dependencies,
                   args: module.args,
@@ -191,7 +191,7 @@ public extension ScreenModuleImplementationResolver {
             """
             Brackets(parenthesis: .round) {
                 ForEach(module.allViewDependencies, separator: ", ") {
-                    "\($0.name): \($0.name)"
+                    "\($0.label): \($0.label)"
                 }
             }.endingWithNewline()
             """
@@ -211,7 +211,7 @@ public extension ScreenModuleImplementationResolver {
         module.presenterTypeName
         Brackets(parenthesis: .round) {
             ForEach(module.dependencies + module.args, separator: .commaSpace) { dep in
-                "\(dep.name): \(dep.name)"
+                "\(dep.label): \(dep.label)"
             }
         }
     }
@@ -259,7 +259,7 @@ public extension CoordinatorImplementationResolver {
             "let coordinator = \(coordinator.typeName)"
             Brackets(parenthesis: .round) {
                 ForEach(coordinator.dependencies + startModule.args, separator: .commaSpace) {
-                    "\($0.name): \($0.name)"
+                    "\($0.label): \($0.label)"
                 }
             }.endingWithNewline()
             """
@@ -284,10 +284,10 @@ public struct StartFuncImplementation: TextDocument {
     }
 
     public var textBody: some TextDocument {
-        "let \(module.input != nil ? "module" : "viewController") = \(module.assemblyDependency.name).assemble"
+        "let \(module.input != nil ? "module" : "viewController") = \(module.assemblyDependency.label).assemble"
         Brackets(parenthesis: .round) {
             ForEach(module.args, separator: .commaSpace) { dep in
-                "\(dep.name): \(dep.name)"
+                "\(dep.label): \(dep.label)"
             }.suffix(module.output != nil ? ", " : "")
             if module.output != nil {
                 "output: self"

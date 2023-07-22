@@ -56,7 +56,7 @@ public struct Presenter: TextDocument {
             ClosureDecl(name: "init", args: dependencies + args, modifiers: modifiers)
             Brackets(parenthesis: .curve.prefixed(.space), indentation: indentation) {
                 ForEach(dependencies + args, separator: .newline) { arg in
-                    "self.\(arg.name) = \(arg.argName ?? arg.name)"
+                    "self.\(arg.label) = \(arg.argName ?? arg.label)"
                 }
             }.endingWithNewline(2)
             Mark(name: interface.decl.name)
@@ -74,7 +74,7 @@ public struct Presenter: TextDocument {
         if let output {
             vars.append(VarDecl(name: "output", type: output.decl.name + "?", modifiers: [.weak, .var]))
         }
-        return vars + dependencies.map({ VarDecl(name: $0.name, type: $0.type, modifiers: [.private, .let]) })
+        return vars + dependencies.map({ VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let]) })
     }
 
     @TextDocumentBuilder
@@ -83,7 +83,7 @@ public struct Presenter: TextDocument {
             VarDecl(name: "someArg", type: "SomeType", modifiers: [.private]).commented()
         } else {
             ForEach(args, separator: .newline) {
-                VarDecl(name: $0.name, type: $0.type, modifiers: [.private, .let])
+                VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
             }
         }
     }

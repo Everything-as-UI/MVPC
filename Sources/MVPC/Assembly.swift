@@ -43,7 +43,7 @@ public struct Assembly: TextDocument {
             ClosureDecl(name: "init", args: dependencies, modifiers: modifiers)
             Brackets(parenthesis: .curve.prefixed(.space), indentation: indentation) {
                 ForEach(dependencies, separator: .newline) { arg in
-                    "self.\(arg.name) = \(arg.argName ?? arg.name)"
+                    "self.\(arg.label) = \(arg.argName ?? arg.label)"
                 }
             }.endingWithNewline(2)
             Mark(name: interface.decl.name)
@@ -57,7 +57,7 @@ public struct Assembly: TextDocument {
             VarDecl(name: "someDep", type: "Lazy<ISomeDep>", modifiers: [.private]).commented()
         } else {
             ForEach(dependencies, separator: .newline) { dep in
-                VarDecl(name: dep.name, type: dep.type, modifiers: [.private, .let])
+                VarDecl(name: dep.label, type: dep.type, modifiers: [.private, .let])
             }
         }
     }
