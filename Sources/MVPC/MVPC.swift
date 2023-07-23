@@ -16,6 +16,7 @@ public struct ScreenModule {
     public let args: [ClosureDecl.Arg]
     public let dependencies: [ClosureDecl.Arg]
     public let presenterInterface: ProtocolDecl
+    public let viewSuperclass: String
     public let viewInterface: ProtocolDecl
     public let viewDependencies: [ClosureDecl.Arg]
 
@@ -25,6 +26,7 @@ public struct ScreenModule {
                 args: [ClosureDecl.Arg] = [],
                 dependencies: [ClosureDecl.Arg] = [],
                 presenterInterface: ProtocolDecl? = nil,
+                viewSuperclass: String = "UIViewController",
                 viewInterface: ProtocolDecl? = nil,
                 viewDependencies: [ClosureDecl.Arg] = []) {
         self.name = name
@@ -33,6 +35,7 @@ public struct ScreenModule {
         self.args = args
         self.dependencies = dependencies
         self.presenterInterface = presenterInterface ?? .presenter(name: "I\(name)Presenter")
+        self.viewSuperclass = viewSuperclass
         self.viewInterface = viewInterface ?? .view(name: "I\(name)View")
         self.viewDependencies = viewDependencies
     }
@@ -48,13 +51,13 @@ public struct ScreenModule {
     }
     public func assembly(accessLevel: Keyword? = nil) -> Assembly {
         Assembly(typeName: assemblyTypeName,
-                         interface: .assembly(name: assemblyInterfaceName,
-                                              args: args + (output.map { [ClosureDecl.Arg(label: "output", type: $0.decl.name)] } ?? []),
-                                              result: input.map { "Module<\($0.decl.name)>" } ?? "UIViewController",
-                                              modifiers: accessLevel.map({ [$0] }) ?? []),
-                         dependencies: dependencies, // TODO: assembly can itself dependencies
-                         args: args,
-                         modifiers: accessLevel.map({ [$0] }) ?? [])
+                 interface: .assembly(name: assemblyInterfaceName,
+                                      args: args + (output.map { [ClosureDecl.Arg(label: "output", type: $0.decl.name)] } ?? []),
+                                      result: input.map { "Module<\($0.decl.name)>" } ?? "UIViewController",
+                                      modifiers: accessLevel.map({ [$0] }) ?? []),
+                 dependencies: dependencies, // TODO: assembly can itself dependencies
+                 args: args,
+                 modifiers: accessLevel.map({ [$0] }) ?? [])
     }
 
     public var presenterTypeName: String {
@@ -65,13 +68,13 @@ public struct ScreenModule {
     }
     public func presenter(accessLevel: Keyword? = nil) -> Presenter {
         Presenter(typeName: presenterTypeName,
-                          interface: presenterInterface,
-                          viewInterfaceName: viewInterface.decl.name,
-                          input: input,
-                          output: output,
-                          dependencies: dependencies,
-                          args: args,
-                          modifiers: accessLevel.map({ [$0] }) ?? [])
+                  interface: presenterInterface,
+                  viewInterfaceName: viewInterface.decl.name,
+                  input: input,
+                  output: output,
+                  dependencies: dependencies,
+                  args: args,
+                  modifiers: accessLevel.map({ [$0] }) ?? [])
     }
 
     public var viewTypeName: String {
@@ -85,9 +88,10 @@ public struct ScreenModule {
     }
     public func view(accessLevel: Keyword? = nil) -> View {
         View(typeName: viewTypeName,
-                     interface: viewInterface,
-                     dependencies: allViewDependencies,
-                     modifiers: accessLevel.map({ [$0] }) ?? [])
+             inherits: [viewSuperclass],
+             interface: viewInterface,
+             dependencies: allViewDependencies,
+             modifiers: accessLevel.map({ [$0] }) ?? [])
     }
 }
 

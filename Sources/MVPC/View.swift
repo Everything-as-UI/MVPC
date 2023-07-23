@@ -11,15 +11,18 @@ import SwiftLangUI
 
 public struct View: TextDocument {
     public let typeName: String
+    public let inherits: [String]
     public let interface: ProtocolDecl
     public let dependencies: [ClosureDecl.Arg]
     public let modifiers: [Keyword]
 
     public init(typeName: String,
+                inherits: [String] = ["UIViewController"],
                 interface: ProtocolDecl,
                 dependencies: [ClosureDecl.Arg] = [],
                 modifiers: [Keyword] = []) {
         self.typeName = typeName
+        self.inherits = inherits
         self.dependencies = dependencies
         self.modifiers = modifiers
         self.interface = interface
@@ -36,7 +39,7 @@ public struct View: TextDocument {
 
     public var textBody: some TextDocument {
         interface.endingWithNewline(2)
-        TypeDecl(name: typeName, modifiers: modifiers + [.final, .class], inherits: ["UIViewController", interface.decl.name])
+        TypeDecl(name: typeName, modifiers: modifiers + [.final, .class], inherits: inherits + [interface.decl.name])
         Brackets(parenthesis: .curve.prefixed(.space), indentation: indentation) {
             Group {
                 String.dependencies.commented().endingWithNewline()

@@ -5,4 +5,5 @@
 //  Created by Denis Koryttsev on 22.07.23.
 //
 
-public typealias Router = CommonEntity
+public enum RouterToken {}
+public typealias Router = CommonEntity<RouterToken>

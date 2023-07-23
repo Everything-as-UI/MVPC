@@ -9,13 +9,13 @@ import CoreUI
 import DocumentUI
 import SwiftLangUI
 
-public struct CommonEntity: TextDocument {
+public struct CommonEntity<Token>: TextDocument {
     public let typeName: String
     public let interface: ProtocolDecl
     public let dependencies: [ClosureDecl.Arg]
     public let modifiers: [Keyword]
 
-    public static let interfaceImplementation = ImplementationIdentifier("\(Self.self).inteface")
+    public static var interfaceImplementation: ImplementationIdentifier { ImplementationIdentifier("\(Self.self).inteface") }
 
     public init(typeName: String, interface: ProtocolDecl, dependencies: [ClosureDecl.Arg] = [], modifiers: [Keyword] = []) {
         self.typeName = typeName
