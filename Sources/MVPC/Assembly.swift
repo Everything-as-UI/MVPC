@@ -57,7 +57,7 @@ public struct Assembly: TextDocument {
             VarDecl(name: "someDep", type: "Lazy<ISomeDep>", modifiers: [.private]).commented()
         } else {
             ForEach(dependencies, separator: .newline) { dep in
-                VarDecl(name: dep.label, type: dep.type, modifiers: [.private, .let])
+                VarDecl(name: dep.label!, type: dep.type, modifiers: [.private, .let])
             }
         }
     }

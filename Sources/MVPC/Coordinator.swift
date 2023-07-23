@@ -71,21 +71,21 @@ public struct Coordinator: TextDocument {
 
     private var moduleInputs: [VarDecl] {
         inputs.map {
-            VarDecl(name: $0.label, type: "\($0.type)?", modifiers: [.weak, .var])
+            VarDecl(name: $0.label!, type: "\($0.type)?", modifiers: [.weak, .var])
         }
     }
 
     @TextDocumentBuilder
     private var dependencyProperties: some TextDocument {
         Joined(separator: String.newline, elements: moduleInputs + dependencies.map {
-            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let])
         })
     }
 
     @TextDocumentBuilder
     private var argsProperties: some TextDocument {
         Joined(separator: String.newline, elements: args.map {
-            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let])
         })
     }
 }

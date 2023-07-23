@@ -46,6 +46,6 @@ public struct CommonEntity<Token>: TextDocument {
     }
 
     private var dependencyProperties: [VarDecl] {
-        dependencies.map { VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let]) }
+        dependencies.map { VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let]) }
     }
 }

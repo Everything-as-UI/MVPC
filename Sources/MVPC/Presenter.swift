@@ -74,7 +74,7 @@ public struct Presenter: TextDocument {
         if let output {
             vars.append(VarDecl(name: "output", type: output.decl.name + "?", modifiers: [.weak, .var]))
         }
-        return vars + dependencies.map({ VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let]) })
+        return vars + dependencies.map({ VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let]) })
     }
 
     @TextDocumentBuilder
@@ -83,7 +83,7 @@ public struct Presenter: TextDocument {
             VarDecl(name: "someArg", type: "SomeType", modifiers: [.private]).commented()
         } else {
             ForEach(args, separator: .newline) {
-                VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
+                VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let])
             }
         }
     }

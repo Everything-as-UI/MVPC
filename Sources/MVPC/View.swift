@@ -28,7 +28,6 @@ public struct View: TextDocument {
         self.interface = interface
     }
 
-
     public static let interfaceImplementation: ImplementationIdentifier = "interface"
     public static let uiProperties = ImplementationIdentifier(rawValue: String(describing: Self.self) + ".uiProperties")
     public static let privateFunctions = ImplementationIdentifier(rawValue: String(describing: Self.self) + ".privateFunctions")
@@ -84,7 +83,7 @@ public struct View: TextDocument {
     @TextDocumentBuilder
     private var dependencyProperties: some TextDocument {
         ForEach(dependencies, separator: "\n") {
-            VarDecl(name: $0.label, type: $0.type, modifiers: [.private, .let])
+            VarDecl(name: $0.label!, type: $0.type, modifiers: [.private, .let])
         }
     }
 }
