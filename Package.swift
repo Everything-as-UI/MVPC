@@ -13,11 +13,11 @@ let package = Package(
     name: "MVPC",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
     products: [
-        .library(name: "MVPC", targets: ["MVPC"])
+        .library(name: "MVPCKit", targets: ["MVPCKit"])
     ],
     dependencies: dependencies,
     targets: [
-        .target(name: "MVPC", dependencies: ["SwiftLangUI"]),
-        .testTarget(name: "MVPCTests", dependencies: ["MVPC"])
+        .target(name: "MVPCKit", dependencies: ["SwiftLangUI"]),
+        .testTarget(name: "MVPCTests", dependencies: ["MVPCKit"])
     ]
 )
